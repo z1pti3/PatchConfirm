@@ -12,21 +12,35 @@ namespace PatchConfirm
     {
         static void Main(string[] args)
         {
-            var updateServiceManager = new UpdateServiceManager();
-            var updateSession = new UpdateSession();
-            var UpdateService = updateServiceManager.AddScanPackageService("Offline sync Service", Directory.GetCurrentDirectory()+"\\wsusscn2.cab", 1);
-            var updateSearcher = updateSession.CreateUpdateSearcher();
+            IUpdateServiceManager upServiceMan = new UpdateServiceManager();
+            IUpdateSession upSession = new UpdateSession();
+            IUpdateService upService = upServiceMan.AddScanPackageService("Offline sync Service", Directory.GetCurrentDirectory() + "\\wsusscn2.cab", 1);
+            IUpdateSearcher upSearcher = upSession.CreateUpdateSearcher();
 
-            updateSearcher.ServerSelection = ServerSelection.ssOthers;
-            updateSearcher.ServiceID = UpdateService.ServiceID;
+            upSearcher.ServerSelection = ServerSelection.ssOthers;
+            upSearcher.ServiceID = upService.ServiceID;
 
-            Console.WriteLine("Searching...");
-            var SearchResult = updateSearcher.Search("IsInstalled=0");
-            for (int i =0; i < SearchResult.Updates.Count-1; i++)
+            Console.WriteLine("Collecting update information...");
+            ISearchResult SearchResult = upSearcher.Search("IsInstalled=0 or IsInstalled=1");
+            Console.WriteLine("**Installed Updates**");
+            foreach (IUpdate update in SearchResult.Updates)
             {
-                Console.WriteLine(SearchResult.Updates[i].Title);
+                if (update.IsInstalled)
+                {
+                    Console.WriteLine(update.MsrcSeverity + " - " + update.Title);
+                }
             }
-            Console.WriteLine("Search completed!");
+
+            Console.WriteLine("**Missing Updates**");
+            foreach (IUpdate update in SearchResult.Updates)
+            {
+                if (!update.IsInstalled)
+                {
+                    Console.WriteLine(update.MsrcSeverity + " - " + update.Title);
+                }
+            }
+
+            Console.WriteLine("Press enter to quit!");
             Console.ReadLine();
         }
     }
