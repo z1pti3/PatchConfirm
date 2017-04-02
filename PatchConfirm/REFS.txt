@@ -1,0 +1,8 @@
+﻿c:\windows\system32\
+tlbimp.exe wuapi.dll /out=WUApiInterop.dll
+
+
+
+https://msdn.microsoft.com/en-us/library/windows/desktop/aa387290(v=vs.85).aspx
+http://go.microsoft.com/fwlink/p/?LinkID=74689
+
